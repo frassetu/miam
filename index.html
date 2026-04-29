@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plan Alimentaire</title>
+
+<style>
+body{
+  margin:0;
+  font-family: Arial;
+  background:#f3f4f6;
+  display:flex;
+  flex-direction:column;
+  height:100vh;
+}
+
+/* HEADER */
+.header{
+  background:#2d6a4f;
+  color:white;
+  text-align:center;
+  padding:12px;
+  font-weight:bold;
+  font-size:18px;
+}
+
+/* DAY */
+.day{
+  flex:1;
+  padding:10px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+
+.card{
+  background:white;
+  border-radius:10px;
+  padding:10px;
+  margin-bottom:8px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+h3{
+  margin:0 0 5px 0;
+  font-size:14px;
+}
+
+.item{
+  font-size:13px;
+  margin-bottom:3px;
+}
+
+/* COLORS */
+.matin{background:#fdf3e0;}
+.midi{background:#e8f5ee;}
+.collation{background:#fdeaea;}
+.soir{background:#eeecfb;}
+
+/* NAV */
+.nav{
+  display:flex;
+  justify-content:space-between;
+  padding:10px;
+}
+
+button{
+  flex:1;
+  margin:5px;
+  padding:12px;
+  border:none;
+  border-radius:8px;
+  font-size:16px;
+  font-weight:bold;
+  background:#2d6a4f;
+  color:white;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header" id="dayTitle">Jeudi</div>
+
+<div class="day" id="content"></div>
+
+<div class="nav">
+  <button onclick="prev()">⬅️</button>
+  <button onclick="next()">➡️</button>
+</div>
+
+<script>
+
+let days = [
+
+{
+title:"Jeudi",
+meals:`
+<div class="card matin">
+<h3>🌅 Petit-déjeuner</h3>
+<div class="item">Skyr 200g</div>
+<div class="item">Granola 40g</div>
+</div>
+
+<div class="card midi">
+<h3>☀️ Déjeuner</h3>
+<div class="item">Saumon 140g</div>
+<div class="item">Pâtes complètes 60g</div>
+</div>
+
+<div class="card collation">
+<h3>🍎 Collation</h3>
+<div class="item">Fromage blanc</div>
+<div class="item">Whey 20g</div>
+</div>
+
+<div class="card soir">
+<h3>🌙 Dîner</h3>
+<div class="item">Poulet 140g</div>
+<div class="item">Ratatouille</div>
+</div>
+`
+},
+
+{
+title:"Vendredi",
+meals:`<div class="card"><h3>Repas du vendredi (à compléter)</h3></div>`
+},
+
+{
+title:"Samedi",
+meals:`<div class="card"><h3>Repas du samedi</h3></div>`
+},
+
+{
+title:"Dimanche",
+meals:`<div class="card"><h3>Repas du dimanche</h3></div>`
+}
+
+];
+
+let index = 0;
+
+function show(){
+  document.getElementById("dayTitle").innerText = days[index].title;
+  document.getElementById("content").innerHTML = days[index].meals;
+}
+
+function next(){
+  if(index < days.length-1){
+    index++;
+    show();
+  }
+}
+
+function prev(){
+  if(index > 0){
+    index--;
+    show();
+  }
+}
+
+show();
+
+</script>
+
+</body>
+</html>
