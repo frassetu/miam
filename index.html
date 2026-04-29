@@ -4,166 +4,687 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Plan Alimentaire</title>
-
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-body{
-  margin:0;
-  font-family: Arial;
-  background:#f3f4f6;
-  display:flex;
-  flex-direction:column;
-  height:100vh;
-}
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d26;
+    --card: #20242f;
+    --accent: #e8c97d;
+    --accent2: #7dd4e8;
+    --text: #f0ede6;
+    --muted: #8a8fa8;
+    --border: #2e3244;
+  }
 
-/* HEADER */
-.header{
-  background:#2d6a4f;
-  color:white;
-  text-align:center;
-  padding:12px;
-  font-weight:bold;
-  font-size:18px;
-}
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* DAY */
-.day{
-  flex:1;
-  padding:10px;
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-}
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-.card{
-  background:white;
-  border-radius:10px;
-  padding:10px;
-  margin-bottom:8px;
-  box-shadow:0 2px 8px rgba(0,0,0,0.1);
-}
+  /* Background texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 80% 10%, rgba(232,201,125,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 50% at 10% 90%, rgba(125,212,232,0.05) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
 
-h3{
-  margin:0 0 5px 0;
-  font-size:14px;
-}
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 32px 20px 60px;
+    position: relative;
+    z-index: 1;
+  }
 
-.item{
-  font-size:13px;
-  margin-bottom:3px;
-}
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+    animation: fadeDown 0.6s ease both;
+  }
 
-/* COLORS */
-.matin{background:#fdf3e0;}
-.midi{background:#e8f5ee;}
-.collation{background:#fdeaea;}
-.soir{background:#eeecfb;}
+  .header-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
 
-/* NAV */
-.nav{
-  display:flex;
-  justify-content:space-between;
-  padding:10px;
-}
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 5vw, 38px);
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
 
-button{
-  flex:1;
-  margin:5px;
-  padding:12px;
-  border:none;
-  border-radius:8px;
-  font-size:16px;
-  font-weight:bold;
-  background:#2d6a4f;
-  color:white;
-}
+  /* Navigation */
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 16px 20px;
+    margin-bottom: 32px;
+    animation: fadeUp 0.5s ease 0.1s both;
+  }
+
+  .nav-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .nav-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(232,201,125,0.08);
+  }
+
+  .nav-btn:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+  }
+
+  .nav-center {
+    text-align: center;
+    flex: 1;
+    padding: 0 16px;
+  }
+
+  .nav-day {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .nav-date {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  .nav-dots {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 10px;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .dot.active {
+    background: var(--accent);
+    width: 18px;
+    border-radius: 3px;
+  }
+
+  /* Day view */
+  .day-view {
+    animation: slideIn 0.35s ease both;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Meal cards */
+  .meal-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    margin-bottom: 14px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .meal-card:hover {
+    border-color: rgba(232,201,125,0.3);
+  }
+
+  .meal-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .meal-icon {
+    font-size: 20px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(232,201,125,0.08);
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+
+  .meal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.2px;
+  }
+
+  .meal-body {
+    padding: 14px 20px;
+  }
+
+  .food-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(46,50,68,0.5);
+  }
+
+  .food-item:last-child { border-bottom: none; }
+
+  .food-name {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text);
+  }
+
+  .food-qty {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 300;
+    white-space: nowrap;
+    margin-left: 12px;
+  }
+
+  .food-qty .highlight {
+    color: var(--accent2);
+    font-weight: 500;
+  }
+
+  /* Note card */
+  .note-card {
+    background: rgba(232,201,125,0.05);
+    border: 1px solid rgba(232,201,125,0.2);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 14px;
+    font-size: 13.5px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .note-card strong {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  /* Whey badge */
+  .whey-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(125,212,232,0.1);
+    border: 1px solid rgba(125,212,232,0.25);
+    color: var(--accent2);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-top: 4px;
+  }
 </style>
 </head>
-
 <body>
+<div class="container">
+  <div class="header">
+    <div class="header-label">Plan alimentaire</div>
+    <h1>Nutrition Semaine</h1>
+  </div>
 
-<div class="header" id="dayTitle">Jeudi</div>
+  <div class="nav">
+    <button class="nav-btn" id="prevBtn" onclick="changDay(-1)">←</button>
+    <div class="nav-center">
+      <div class="nav-day" id="navDay">Jour 1</div>
+      <div class="nav-date" id="navDate"></div>
+      <div class="nav-dots" id="navDots"></div>
+    </div>
+    <button class="nav-btn" id="nextBtn" onclick="changDay(1)">→</button>
+  </div>
 
-<div class="day" id="content"></div>
-
-<div class="nav">
-  <button onclick="prev()">⬅️</button>
-  <button onclick="next()">➡️</button>
+  <div id="dayView" class="day-view"></div>
 </div>
 
 <script>
-
-let days = [
-
-{
-title:"Jeudi",
-meals:`
-<div class="card matin">
-<h3>🌅 Petit-déjeuner</h3>
-<div class="item">Skyr 200g</div>
-<div class="item">Granola 40g</div>
-</div>
-
-<div class="card midi">
-<h3>☀️ Déjeuner</h3>
-<div class="item">Saumon 140g</div>
-<div class="item">Pâtes complètes 60g</div>
-</div>
-
-<div class="card collation">
-<h3>🍎 Collation</h3>
-<div class="item">Fromage blanc</div>
-<div class="item">Whey 20g</div>
-</div>
-
-<div class="card soir">
-<h3>🌙 Dîner</h3>
-<div class="item">Poulet 140g</div>
-<div class="item">Ratatouille</div>
-</div>
-`
-},
-
-{
-title:"Vendredi",
-meals:`<div class="card"><h3>Repas du vendredi (à compléter)</h3></div>`
-},
-
-{
-title:"Samedi",
-meals:`<div class="card"><h3>Repas du samedi</h3></div>`
-},
-
-{
-title:"Dimanche",
-meals:`<div class="card"><h3>Repas du dimanche</h3></div>`
-}
-
+const DAYS_DATA = [
+  {
+    label: "Jour 1",
+    meals: [
+      {
+        icon: "☀️", title: "Petit-déjeuner",
+        items: [
+          { name: "Skyr", qty: "200 g (+50 g)" },
+          { name: "Flocons d'avoine", qty: "40 g" },
+          { name: "Fruits rouges", qty: "100 g" },
+          { name: "Amandes", qty: "10 g" },
+        ]
+      },
+      {
+        icon: "🥗", title: "Déjeuner",
+        items: [
+          { name: "Blanc de poulet", qty: "140 g (+20 g)" },
+          { name: "Riz complet", qty: "60 g" },
+          { name: "Brocolis", qty: "150 g" },
+          { name: "Huile d'olive", qty: "10 g" },
+        ]
+      },
+      {
+        icon: "🍎", title: "Collation",
+        items: [
+          { name: "Fromage blanc", qty: "200 g" },
+          { name: "Miel", qty: "10 g" },
+          { name: "Whey", qty: "20 g", whey: true },
+        ]
+      },
+      {
+        icon: "⚡", title: "Post-training",
+        items: [
+          { name: "Whey", qty: "20 g", whey: true },
+        ]
+      },
+      {
+        icon: "🌙", title: "Dîner",
+        items: [
+          { name: "Saumon", qty: "140 g" },
+          { name: "Patate douce", qty: "150 g" },
+          { name: "Courgettes", qty: "150 g" },
+        ]
+      },
+    ]
+  },
+  {
+    label: "Jour 2",
+    meals: [
+      {
+        icon: "☀️", title: "Petit-déjeuner",
+        items: [
+          { name: "2 œufs + 3 blancs", qty: "" },
+          { name: "Pain complet", qty: "50 g" },
+          { name: "1 kiwi", qty: "" },
+        ]
+      },
+      {
+        icon: "🥗", title: "Déjeuner",
+        items: [
+          { name: "Steak 5%", qty: "140 g" },
+          { name: "Quinoa", qty: "60 g" },
+          { name: "Haricots verts", qty: "150 g" },
+        ]
+      },
+      {
+        icon: "🍎", title: "Collation",
+        items: [
+          { name: "Skyr", qty: "200 g" },
+          { name: "1 pomme", qty: "" },
+          { name: "Whey", qty: "20 g", whey: true },
+        ]
+      },
+      {
+        icon: "🌙", title: "Dîner",
+        items: [
+          { name: "Cabillaud", qty: "150 g" },
+          { name: "Riz", qty: "50 g" },
+          { name: "Épinards", qty: "150 g" },
+          { name: "Whey (post-training ou soir)", qty: "20 g", whey: true },
+        ]
+      },
+    ]
+  },
+  {
+    label: "Jour 3",
+    meals: [
+      {
+        icon: "☀️", title: "Petit-déjeuner",
+        items: [
+          { name: "Fromage blanc", qty: "250 g" },
+          { name: "Banane", qty: "100 g" },
+          { name: "Beurre de cacahuète", qty: "15 g" },
+        ]
+      },
+      {
+        icon: "🥗", title: "Déjeuner",
+        items: [
+          { name: "Dinde", qty: "140 g" },
+          { name: "Lentilles", qty: "60 g" },
+          { name: "Carottes", qty: "150 g" },
+        ]
+      },
+      {
+        icon: "🍎", title: "Collation",
+        items: [
+          { name: "1 œuf dur + pain complet", qty: "" },
+          { name: "Whey", qty: "20 g", whey: true },
+        ]
+      },
+      {
+        icon: "🌙", title: "Dîner",
+        items: [
+          { name: "Omelette (2 œufs + 3 blancs)", qty: "" },
+          { name: "Avocat", qty: "50 g" },
+          { name: "Whey", qty: "20 g", whey: true },
+        ]
+      },
+    ]
+  },
+  {
+    label: "Jour 4",
+    meals: [
+      {
+        icon: "☀️", title: "Petit-déjeuner",
+        items: [
+          { name: "Skyr", qty: "200 g" },
+          { name: "Granola", qty: "40 g" },
+        ]
+      },
+      {
+        icon: "🥗", title: "Déjeuner",
+        items: [
+          { name: "Saumon", qty: "140 g" },
+          { name: "Pâtes complètes", qty: "60 g" },
+          { name: "Brocolis", qty: "150 g" },
+        ]
+      },
+      {
+        icon: "🍎", title: "Collation",
+        items: [
+          { name: "Fromage blanc", qty: "200 g" },
+          { name: "Whey", qty: "20 g", whey: true },
+        ]
+      },
+      {
+        icon: "🌙", title: "Dîner",
+        items: [
+          { name: "Poulet", qty: "140 g" },
+          { name: "Ratatouille", qty: "200 g" },
+          { name: "Whey", qty: "20 g", whey: true },
+        ]
+      },
+    ]
+  },
+  {
+    label: "Jour 5",
+    note: "Même logique que les jours précédents — <strong>protéines animales +20 g</strong>, Skyr/fromage blanc 200 g, œufs +1 blanc si déjà présents. Whey : 20 g collation + 20 g post-training.",
+    meals: [
+      {
+        icon: "☀️", title: "Petit-déjeuner",
+        items: [
+          { name: "Skyr", qty: "200 g" },
+          { name: "Flocons d'avoine", qty: "40 g" },
+          { name: "Fruits rouges", qty: "100 g" },
+          { name: "Amandes", qty: "10 g" },
+        ]
+      },
+      {
+        icon: "🥗", title: "Déjeuner",
+        items: [
+          { name: "Protéine animale (ex. dinde)", qty: "140 g (+20 g)" },
+          { name: "Féculent", qty: "60 g" },
+          { name: "Légumes", qty: "150 g" },
+        ]
+      },
+      {
+        icon: "🍎", title: "Collation",
+        items: [
+          { name: "Fromage blanc / Skyr", qty: "200 g" },
+          { name: "Whey", qty: "20 g", whey: true },
+        ]
+      },
+      {
+        icon: "⚡", title: "Post-training",
+        items: [
+          { name: "Whey", qty: "20 g", whey: true },
+        ]
+      },
+      {
+        icon: "🌙", title: "Dîner",
+        items: [
+          { name: "Poisson ou viande", qty: "140 g (+20 g)" },
+          { name: "Légumes", qty: "150–200 g" },
+        ]
+      },
+    ]
+  },
+  {
+    label: "Jour 6",
+    note: "Ajustements : Poulet/poisson <strong>140 g</strong>, produits laitiers <strong>200–250 g</strong>, omelette +1 blanc. <strong>Whey total 40 g/jour</strong> répartis.",
+    meals: [
+      {
+        icon: "☀️", title: "Petit-déjeuner",
+        items: [
+          { name: "Fromage blanc / Skyr", qty: "200–250 g" },
+          { name: "Fruit", qty: "100 g" },
+          { name: "Oléagineux", qty: "10–15 g" },
+        ]
+      },
+      {
+        icon: "🥗", title: "Déjeuner",
+        items: [
+          { name: "Poulet / Poisson", qty: "140 g" },
+          { name: "Féculent", qty: "60 g" },
+          { name: "Légumes", qty: "150 g" },
+        ]
+      },
+      {
+        icon: "🍎", title: "Collation",
+        items: [
+          { name: "Skyr / Fromage blanc", qty: "200 g" },
+          { name: "Whey", qty: "20 g", whey: true },
+        ]
+      },
+      {
+        icon: "⚡", title: "Post-training",
+        items: [
+          { name: "Whey", qty: "20 g", whey: true },
+        ]
+      },
+      {
+        icon: "🌙", title: "Dîner",
+        items: [
+          { name: "Omelette (+1 blanc vs base)", qty: "" },
+          { name: "Légumes", qty: "150–200 g" },
+        ]
+      },
+    ]
+  },
+  {
+    label: "Jour 7",
+    note: "Même ajustements que Jour 6 : Poulet/poisson <strong>140 g</strong>, produits laitiers <strong>200–250 g</strong>, omelette +1 blanc, <strong>40 g whey/jour</strong> répartis.",
+    meals: [
+      {
+        icon: "☀️", title: "Petit-déjeuner",
+        items: [
+          { name: "Skyr", qty: "200–250 g" },
+          { name: "Granola / Flocons", qty: "40 g" },
+          { name: "Fruit", qty: "100 g" },
+        ]
+      },
+      {
+        icon: "🥗", title: "Déjeuner",
+        items: [
+          { name: "Poisson / Viande blanche", qty: "140 g" },
+          { name: "Féculent", qty: "60 g" },
+          { name: "Légumes", qty: "150 g" },
+          { name: "Huile d'olive", qty: "10 g" },
+        ]
+      },
+      {
+        icon: "🍎", title: "Collation",
+        items: [
+          { name: "Fromage blanc", qty: "200 g" },
+          { name: "Whey", qty: "20 g", whey: true },
+        ]
+      },
+      {
+        icon: "⚡", title: "Post-training",
+        items: [
+          { name: "Whey", qty: "20 g", whey: true },
+        ]
+      },
+      {
+        icon: "🌙", title: "Dîner",
+        items: [
+          { name: "Omelette (2 œufs + 4 blancs)", qty: "" },
+          { name: "Avocat", qty: "50 g" },
+          { name: "Légumes verts", qty: "150 g" },
+        ]
+      },
+    ]
+  },
 ];
 
-let index = 0;
+// Day 1 = tomorrow = Thursday April 30, 2026
+const startDate = new Date(2026, 3, 30); // months are 0-indexed
 
-function show(){
-  document.getElementById("dayTitle").innerText = days[index].title;
-  document.getElementById("content").innerHTML = days[index].meals;
+const DAY_NAMES = ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
+const MONTH_NAMES = ["janv.","févr.","mars","avr.","mai","juin","juil.","août","sept.","oct.","nov.","déc."];
+
+let currentDay = 0; // 0-indexed
+
+function getDateForDay(index) {
+  const d = new Date(startDate);
+  d.setDate(d.getDate() + index);
+  return `${DAY_NAMES[d.getDay()]} ${d.getDate()} ${MONTH_NAMES[d.getMonth()]}`;
 }
 
-function next(){
-  if(index < days.length-1){
-    index++;
-    show();
+function buildDots() {
+  const container = document.getElementById('navDots');
+  container.innerHTML = '';
+  DAYS_DATA.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === currentDay ? ' active' : '');
+    dot.onclick = () => goToDay(i);
+    container.appendChild(dot);
+  });
+}
+
+function renderDay(direction = 1) {
+  const data = DAYS_DATA[currentDay];
+  document.getElementById('navDay').textContent = data.label;
+  document.getElementById('navDate').textContent = getDateForDay(currentDay);
+  document.getElementById('prevBtn').disabled = currentDay === 0;
+  document.getElementById('nextBtn').disabled = currentDay === DAYS_DATA.length - 1;
+  buildDots();
+
+  const view = document.getElementById('dayView');
+  view.style.animation = 'none';
+  view.offsetHeight; // reflow
+  view.style.animation = direction >= 0 ? 'slideIn 0.35s ease both' : 'slideInLeft 0.35s ease both';
+
+  let html = '';
+
+  if (data.note) {
+    html += `<div class="note-card">📌 ${data.note}</div>`;
   }
+
+  data.meals.forEach(meal => {
+    html += `
+      <div class="meal-card">
+        <div class="meal-header">
+          <div class="meal-icon">${meal.icon}</div>
+          <div class="meal-title">${meal.title}</div>
+        </div>
+        <div class="meal-body">`;
+
+    meal.items.forEach(item => {
+      if (item.whey) {
+        html += `<div class="food-item">
+          <span class="food-name">${item.name}</span>
+          <span class="whey-badge">💪 ${item.qty}</span>
+        </div>`;
+      } else {
+        html += `<div class="food-item">
+          <span class="food-name">${item.name}</span>
+          ${item.qty ? `<span class="food-qty">${item.qty}</span>` : ''}
+        </div>`;
+      }
+    });
+
+    html += `</div></div>`;
+  });
+
+  view.innerHTML = html;
 }
 
-function prev(){
-  if(index > 0){
-    index--;
-    show();
-  }
+function changDay(dir) {
+  const next = currentDay + dir;
+  if (next < 0 || next >= DAYS_DATA.length) return;
+  currentDay = next;
+  renderDay(dir);
 }
 
-show();
+function goToDay(index) {
+  const dir = index >= currentDay ? 1 : -1;
+  currentDay = index;
+  renderDay(dir);
+}
 
+// Keyboard navigation
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') changDay(1);
+  if (e.key === 'ArrowLeft') changDay(-1);
+});
+
+renderDay(1);
 </script>
-
 </body>
 </html>
